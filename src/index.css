@@ -1,0 +1,509 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* ============================================ */
+/* Quill Editor Customization */
+/* ============================================ */
+
+.quill-wrapper {
+  margin-top: 0.5rem;
+}
+
+.quill-wrapper .ql-container {
+  font-size: 14px;
+  min-height: 120px;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.quill-wrapper .ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.quill-wrapper .ql-editor {
+  min-height: 100px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.quill-wrapper .ql-editor.ql-blank::before {
+  font-style: normal;
+  color: #9ca3af;
+}
+
+/* ============================================ */
+/* Rich Text Content Styles (FOR PREVIEW & EXPORT) */
+/* ============================================ */
+
+.rich-content {
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.rich-content p {
+  margin-bottom: 0.5em;
+  margin-top: 0;
+}
+
+.rich-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists - IMPORTANT: These styles make bullets/numbers visible */
+.rich-content ul,
+.rich-content ol {
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+  list-style-position: outside !important;
+}
+
+.rich-content ul {
+  list-style-type: disc !important;
+}
+
+.rich-content ol {
+  list-style-type: decimal !important;
+}
+
+.rich-content li {
+  margin-bottom: 0.25em;
+  display: list-item !important;
+}
+
+/* Nested lists */
+.rich-content ul ul,
+.rich-content ol ul {
+  list-style-type: circle !important;
+}
+
+.rich-content ul ul ul,
+.rich-content ol ul ul {
+  list-style-type: square !important;
+}
+
+/* Text formatting */
+.rich-content strong {
+  font-weight: 600;
+}
+
+.rich-content em {
+  font-style: italic;
+}
+
+.rich-content u {
+  text-decoration: underline;
+}
+
+.rich-content s {
+  text-decoration: line-through;
+}
+
+/* Headers in rich content */
+.rich-content h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.5em 0;
+  line-height: 1.2;
+}
+
+.rich-content h2 {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin: 0.5em 0;
+  line-height: 1.2;
+}
+
+.rich-content h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0.5em 0;
+  line-height: 1.2;
+}
+
+/* Links */
+.rich-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Alignment */
+.rich-content .ql-align-center {
+  text-align: center;
+}
+
+.rich-content .ql-align-right {
+  text-align: right;
+}
+
+.rich-content .ql-align-justify {
+  text-align: justify;
+}
+
+/* Indentation */
+.rich-content .ql-indent-1 {
+  padding-left: 3em;
+}
+
+.rich-content .ql-indent-2 {
+  padding-left: 6em;
+}
+
+.rich-content .ql-indent-3 {
+  padding-left: 9em;
+}
+
+/* ============================================ */
+/* Page Break Handling for Print/PDF */
+/* ============================================ */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #resume-content,
+  #resume-content * {
+    visibility: visible;
+  }
+
+  #resume-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Page break control */
+  .avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .resume-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ensure proper spacing */
+  .resume-section {
+    margin-bottom: 1em;
+  }
+
+  /* Rich content in print */
+  .rich-content ul,
+  .rich-content ol {
+    padding-left: 1.5em !important;
+    list-style-position: outside !important;
+  }
+
+  .rich-content ul {
+    list-style-type: disc !important;
+  }
+
+  .rich-content ol {
+    list-style-type: decimal !important;
+  }
+
+  .rich-content li {
+    display: list-item !important;
+  }
+}
+
+/* Print page setup */
+@page {
+  size: A4;
+  margin: 0.5in;
+}
+
+@media print {
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ============================================ */
+/* Responsive Design */
+/* ============================================ */
+
+/* Mobile First Approach */
+
+/* Extra small devices (phones, less than 640px) */
+@media (max-width: 639px) {
+  .resume-builder-container {
+    padding: 1rem;
+  }
+
+  .preview-container {
+    display: none; /* Hide live preview on small screens */
+  }
+
+  .mobile-preview-note {
+    display: block;
+  }
+
+  /* Adjust form inputs for mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Quill toolbar responsive */
+  .ql-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .ql-formats {
+    margin-right: 8px !important;
+  }
+
+  /* Template selector grid */
+  .template-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Small devices (tablets, 640px and up) */
+@media (min-width: 640px) and (max-width: 767px) {
+  .template-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .template-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .builder-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .preview-container {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  .builder-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .preview-container {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+/* ============================================ */
+/* Mobile Preview Button */
+/* ============================================ */
+
+.mobile-preview-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 40;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 1024px) {
+  .mobile-preview-btn {
+    display: none;
+  }
+}
+
+/* ============================================ */
+/* Modal for Mobile Preview */
+/* ============================================ */
+
+.mobile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mobile-modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.mobile-modal-close {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ============================================ */
+/* Resume Template Responsiveness */
+/* ============================================ */
+
+.resume-template-wrapper {
+  width: 100%;
+  background: white;
+}
+
+/* Desktop: Show at actual size */
+@media (min-width: 1024px) {
+  .resume-template-wrapper {
+    width: 210mm;
+    min-height: 297mm;
+  }
+}
+
+/* Tablet: Scale down slightly */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .resume-template-wrapper {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+/* Mobile: Full width, natural height */
+@media (max-width: 767px) {
+  .resume-template-wrapper {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* ============================================ */
+/* Utility Classes */
+/* ============================================ */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============================================ */
+/* Loading States */
+/* ============================================ */
+
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
+/* ============================================ */
+/* Accessibility */
+/* ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ============================================ */
+/* Print Optimization */
+/* ============================================ */
+
+@media print {
+  /* Reset any transformations for print */
+  * {
+    transform: none !important;
+  }
+
+  /* Ensure proper page sizing */
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+
+  /* Remove shadows and backgrounds that don't print well */
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
+  }
+
+  /* Ensure text is black for better printing */
+  body {
+    color: #000;
+  }
+
+  /* Keep original colors for specific elements */
+  .text-blue-600,
+  .text-purple-600,
+  .bg-blue-600,
+  .bg-purple-600 {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
