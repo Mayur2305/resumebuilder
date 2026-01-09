@@ -23,18 +23,18 @@ const ResumeBuilderPage = ({
   sectionOrder,
   setSectionOrder,
   TemplateComponent,
+  lineSpacing,
+  setLineSpacing,
   onChangeTemplate,
   onPreview 
 }) => {
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
-  // Update section order when custom sections change
   React.useEffect(() => {
     const baseOrder = sectionOrder.filter(s => !s.startsWith('custom-'));
     const newCustomOrder = customSections.map((_, idx) => `custom-${idx}`);
     const newOrder = [...baseOrder, ...newCustomOrder];
     
-    // Only update if the order actually changed
     if (JSON.stringify(newOrder) !== JSON.stringify(sectionOrder)) {
       setSectionOrder(newOrder);
     }
@@ -78,7 +78,6 @@ const ResumeBuilderPage = ({
     const newSections = customSections.filter((_, i) => i !== index);
     setCustomSections(newSections);
     
-    // Update section order
     const newOrder = sectionOrder.filter(s => s !== `custom-${index}`);
     setSectionOrder(newOrder);
   };
@@ -89,120 +88,45 @@ const ResumeBuilderPage = ({
     setSectionOrder([...sectionOrder, `custom-${newIndex}`]);
   };
 
-  // Render section based on type
   const renderSection = (sectionType, index) => {
     switch (sectionType) {
       case 'personalInfo':
         return (
-          <DraggableSection
-            key={sectionType}
-            index={index}
-            draggedIndex={draggedIndex}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-          >
-            <PersonalInfoForm 
-              data={resumeData.personalInfo} 
-              onChange={handlePersonalInfoChange} 
-            />
+          <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+            <PersonalInfoForm data={resumeData.personalInfo} onChange={handlePersonalInfoChange} />
           </DraggableSection>
         );
-      
       case 'experience':
         return (
-          <DraggableSection
-            key={sectionType}
-            index={index}
-            draggedIndex={draggedIndex}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-          >
-            <ExperienceForm 
-              data={resumeData.experience} 
-              onChange={handleExperienceChange} 
-            />
+          <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+            <ExperienceForm data={resumeData.experience} onChange={handleExperienceChange} />
           </DraggableSection>
         );
-      
       case 'education':
         return (
-          <DraggableSection
-            key={sectionType}
-            index={index}
-            draggedIndex={draggedIndex}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-          >
-            <EducationForm 
-              data={resumeData.education} 
-              onChange={handleEducationChange} 
-            />
+          <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+            <EducationForm data={resumeData.education} onChange={handleEducationChange} />
           </DraggableSection>
         );
-      
       case 'skills':
         return (
-          <DraggableSection
-            key={sectionType}
-            index={index}
-            draggedIndex={draggedIndex}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-          >
-            <SkillsForm 
-              data={resumeData.skills} 
-              onChange={handleSkillsChange} 
-            />
+          <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+            <SkillsForm data={resumeData.skills} onChange={handleSkillsChange} />
           </DraggableSection>
         );
-      
       case 'projects':
         return (
-          <DraggableSection
-            key={sectionType}
-            index={index}
-            draggedIndex={draggedIndex}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-          >
-            <ProjectsForm 
-              data={resumeData.projects} 
-              onChange={handleProjectsChange} 
-            />
+          <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+            <ProjectsForm data={resumeData.projects} onChange={handleProjectsChange} />
           </DraggableSection>
         );
-      
       default:
-        // Handle custom sections
         if (sectionType.startsWith('custom-')) {
           const customIndex = parseInt(sectionType.split('-')[1]);
           if (customSections[customIndex]) {
             return (
-              <DraggableSection
-                key={sectionType}
-                index={index}
-                draggedIndex={draggedIndex}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onDragEnd={handleDragEnd}
-              >
-                <CustomSectionForm
-                  section={customSections[customIndex]}
-                  index={customIndex}
-                  onChange={handleCustomSectionChange}
-                  onDelete={handleCustomSectionDelete}
-                />
+              <DraggableSection key={sectionType} index={index} draggedIndex={draggedIndex} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd}>
+                <CustomSectionForm section={customSections[customIndex]} index={customIndex} onChange={handleCustomSectionChange} onDelete={handleCustomSectionDelete} />
               </DraggableSection>
             );
           }
@@ -216,17 +140,15 @@ const ResumeBuilderPage = ({
       <Header onChangeTemplate={onChangeTemplate} onPreview={onPreview} />
       
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
-        {/* Drag and Drop Info Banner */}
         <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
           <p className="text-xs sm:text-sm text-blue-800">
-            💡 <strong>Tip:</strong> Drag sections using the <GripVertical className="inline" size={16} /> handle to reorder them in your resume!
+            💡 <strong>Tip:</strong> Drag sections using the <GripVertical className="inline" size={16} /> handle to reorder them!
           </p>
         </div>
 
         <div className="builder-layout grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-4 sm:space-y-6">
             {sectionOrder.map((sectionType, index) => renderSection(sectionType, index))}
-            
             <AddSectionButton onAdd={handleAddCustomSection} />
           </div>
 
@@ -235,11 +157,12 @@ const ResumeBuilderPage = ({
             data={resumeData} 
             sections={customSections}
             sectionOrder={sectionOrder}
+            lineSpacing={lineSpacing}
+            setLineSpacing={setLineSpacing}
           />
         </div>
       </div>
 
-      {/* Mobile Preview Button */}
       <button
         onClick={() => setShowMobilePreview(true)}
         className="mobile-preview-btn lg:hidden px-4 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 flex items-center gap-2 shadow-xl"
@@ -248,10 +171,11 @@ const ResumeBuilderPage = ({
         <span>Preview</span>
       </button>
 
-      {/* Mobile Preview Modal */}
       <MobilePreviewModal
         isOpen={showMobilePreview}
         onClose={() => setShowMobilePreview(false)}
+        lineSpacing={lineSpacing}
+        setLineSpacing={setLineSpacing}
       >
         {TemplateComponent && (
           <TemplateComponent 

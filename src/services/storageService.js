@@ -1,13 +1,13 @@
-
 export const storageService = {
   // Save resume data to localStorage
-  saveResume: (data, sections, sectionOrder, selectedTemplate) => {
+  saveResume: (data, sections, sectionOrder, selectedTemplate, lineSpacing = 'normal') => {
     try {
       const resumeState = {
         data,
         sections,
         sectionOrder,
         selectedTemplate,
+        lineSpacing,
         timestamp: new Date().toISOString()
       };
       localStorage.setItem('resume_data', JSON.stringify(resumeState));

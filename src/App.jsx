@@ -4,11 +4,11 @@ import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-do
 import { TEMPLATES } from './constants/templates';
 import { storageService } from './services/storageService';
 
-// Pages
 import HomePage from './pages/HomePage';
 import TemplateSelectorPage from './pages/TemplateSelectorPage';
 import ResumeBuilderPage from './pages/ResumeBuilderPage';
 import PreviewPage from './pages/PreviewPage';
+import DocumentEditorPage from './pages/DocumentEditorPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
     'projects'
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [lineSpacing, setLineSpacing] = useState('normal'); // NEW: Global line spacing state
 
   // Load saved resume data on mount
   useEffect(() => {
@@ -42,15 +43,18 @@ function App() {
       if (saved.selectedTemplate) {
         setSelectedTemplate(saved.selectedTemplate);
       }
+      if (saved.lineSpacing) {
+        setLineSpacing(saved.lineSpacing); // Load saved line spacing
+      }
     }
   }, []);
 
   // Auto-save resume data when it changes
   useEffect(() => {
     if (resumeData.personalInfo.name || resumeData.experience.length > 0) {
-      storageService.saveResume(resumeData, customSections, sectionOrder, selectedTemplate);
+      storageService.saveResume(resumeData, customSections, sectionOrder, selectedTemplate, lineSpacing);
     }
-  }, [resumeData, customSections, sectionOrder, selectedTemplate]);
+  }, [resumeData, customSections, sectionOrder, selectedTemplate, lineSpacing]);
 
   const handleTemplateSelect = (templateId) => {
     setSelectedTemplate(templateId);
@@ -79,90 +83,73 @@ function App() {
 
   return (
     <Routes>
-      {/* Home Page */}
-      <Route 
-        path="/" 
-        element={<HomePage onGetStarted={() => navigate('/templates')} />} 
-      />
+      <Route path="/" element={<HomePage onGetStarted={() => navigate('/templates')} />} />
+      
+      <Route path="/templates" element={
+        <TemplateSelectorPage onSelect={handleTemplateSelect} selectedTemplate={selectedTemplate} />
+      } />
 
-      {/* Template Selection */}
-      <Route 
-        path="/templates" 
-        element={
-          <TemplateSelectorPage 
-            onSelect={handleTemplateSelect}
-            selectedTemplate={selectedTemplate}
-          />
-        } 
-      />
+      <Route path="/builder/:templateId" element={
+        <BuilderWrapper
+          resumeData={resumeData}
+          setResumeData={setResumeData}
+          customSections={customSections}
+          setCustomSections={setCustomSections}
+          sectionOrder={sectionOrder}
+          setSectionOrder={setSectionOrder}
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
+          lineSpacing={lineSpacing}
+          setLineSpacing={setLineSpacing}
+          onChangeTemplate={handleChangeTemplate}
+          onPreview={handlePreview}
+        />
+      } />
 
-      {/* Resume Builder with Template ID */}
-      <Route 
-        path="/builder/:templateId" 
-        element={
-          <BuilderWrapper
-            resumeData={resumeData}
-            setResumeData={setResumeData}
-            customSections={customSections}
-            setCustomSections={setCustomSections}
-            sectionOrder={sectionOrder}
-            setSectionOrder={setSectionOrder}
-            selectedTemplate={selectedTemplate}
-            setSelectedTemplate={setSelectedTemplate}
-            onChangeTemplate={handleChangeTemplate}
-            onPreview={handlePreview}
-          />
-        } 
-      />
+      <Route path="/preview/:templateId" element={
+        <PreviewWrapper
+          resumeData={resumeData}
+          customSections={customSections}
+          sectionOrder={sectionOrder}
+          selectedTemplate={selectedTemplate}
+          lineSpacing={lineSpacing}
+          setLineSpacing={setLineSpacing}
+          onEdit={handleEdit}
+          onChangeTemplate={handleChangeTemplate}
+        />
+      } />
 
-      {/* Preview with Template ID */}
-      <Route 
-        path="/preview/:templateId" 
-        element={
-          <PreviewWrapper
-            resumeData={resumeData}
-            customSections={customSections}
-            sectionOrder={sectionOrder}
-            selectedTemplate={selectedTemplate}
-            onEdit={handleEdit}
-            onChangeTemplate={handleChangeTemplate}
-          />
-        } 
-      />
+      <Route path="/document-editor/:templateId" element={
+        <DocumentEditorPage
+          resumeData={resumeData}
+          customSections={customSections}
+          sectionOrder={sectionOrder}
+          lineSpacing={lineSpacing}
+          setLineSpacing={setLineSpacing}
+          onBack={handleEdit}
+        />
+      } />
 
-      {/* Redirect old paths */}
       <Route path="/builder" element={<Navigate to="/templates" replace />} />
       <Route path="/preview" element={<Navigate to="/templates" replace />} />
-
-      {/* 404 Not Found */}
       <Route path="*" element={<NotFoundPage onGoHome={handleGoHome} />} />
     </Routes>
   );
 }
 
-// Wrapper component for builder to handle template ID from URL
 function BuilderWrapper({ 
-  resumeData, 
-  setResumeData, 
-  customSections, 
-  setCustomSections, 
-  sectionOrder, 
-  setSectionOrder,
-  selectedTemplate,
-  setSelectedTemplate,
-  onChangeTemplate, 
-  onPreview 
+  resumeData, setResumeData, customSections, setCustomSections, 
+  sectionOrder, setSectionOrder, selectedTemplate, setSelectedTemplate,
+  lineSpacing, setLineSpacing, onChangeTemplate, onPreview 
 }) {
   const { templateId } = useParams();
   const navigate = useNavigate();
 
-  // Update selected template from URL
   useEffect(() => {
     const id = parseInt(templateId);
     if (id && TEMPLATES.find(t => t.id === id)) {
       setSelectedTemplate(id);
     } else {
-      // Invalid template ID, redirect to template selection
       navigate('/templates');
     }
   }, [templateId, setSelectedTemplate, navigate]);
@@ -171,9 +158,7 @@ function BuilderWrapper({
     ? TEMPLATES.find(t => t.id === selectedTemplate)?.component 
     : null;
 
-  if (!TemplateComponent) {
-    return null; // Will redirect in useEffect
-  }
+  if (!TemplateComponent) return null;
 
   return (
     <ResumeBuilderPage
@@ -184,25 +169,21 @@ function BuilderWrapper({
       sectionOrder={sectionOrder}
       setSectionOrder={setSectionOrder}
       TemplateComponent={TemplateComponent}
+      lineSpacing={lineSpacing}
+      setLineSpacing={setLineSpacing}
       onChangeTemplate={onChangeTemplate}
       onPreview={onPreview}
     />
   );
 }
 
-// Wrapper component for preview to handle template ID from URL
 function PreviewWrapper({ 
-  resumeData, 
-  customSections, 
-  sectionOrder, 
-  selectedTemplate,
-  onEdit,
-  onChangeTemplate
+  resumeData, customSections, sectionOrder, selectedTemplate,
+  lineSpacing, setLineSpacing, onEdit, onChangeTemplate
 }) {
   const { templateId } = useParams();
   const navigate = useNavigate();
 
-  // Validate template ID from URL
   useEffect(() => {
     const id = parseInt(templateId);
     if (!id || !TEMPLATES.find(t => t.id === id)) {
@@ -212,9 +193,7 @@ function PreviewWrapper({
 
   const TemplateComponent = TEMPLATES.find(t => t.id === parseInt(templateId))?.component;
 
-  if (!TemplateComponent) {
-    return null;
-  }
+  if (!TemplateComponent) return null;
 
   return (
     <PreviewPage
@@ -222,6 +201,8 @@ function PreviewWrapper({
       customSections={customSections}
       sectionOrder={sectionOrder}
       TemplateComponent={TemplateComponent}
+      lineSpacing={lineSpacing}
+      setLineSpacing={setLineSpacing}
       onEdit={onEdit}
       onChangeTemplate={onChangeTemplate}
     />

@@ -1,19 +1,19 @@
-
 import React, { useState } from 'react';
 import { X, ZoomIn, ZoomOut, Maximize2, Minimize2 } from 'lucide-react';
+import LineSpacingControl from './LineSpacingControl';
 
-const MobilePreviewModal = ({ isOpen, onClose, children }) => {
-  const [zoom, setZoom] = useState(0.5); // Start at 50% zoom
+const MobilePreviewModal = ({ isOpen, onClose, lineSpacing, setLineSpacing, children }) => {
+  const [zoom, setZoom] = useState(0.5);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   if (!isOpen) return null;
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 0.1, 1.5)); // Max 150%
+    setZoom(prev => Math.min(prev + 0.1, 1.5));
   };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - 0.1, 0.3)); // Min 30%
+    setZoom(prev => Math.max(prev - 0.1, 0.3));
   };
 
   const handleResetZoom = () => {
@@ -26,87 +26,62 @@ const MobilePreviewModal = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex flex-col" onClick={onClose}>
-      {/* Header Controls */}
       <div 
-        className="bg-white border-b border-gray-200 p-3 flex justify-between items-center sticky top-0 z-10"
+        className="bg-white border-b border-gray-200 p-3 flex flex-col gap-2 sticky top-0 z-10"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2">
-          <h3 className="text-base font-bold text-gray-800">Preview</h3>
-          <span className="text-xs text-gray-500">{Math.round(zoom * 100)}%</span>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-gray-800">Preview</h3>
+            <span className="text-xs text-gray-500">{Math.round(zoom * 100)}%</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button onClick={handleZoomOut} className="p-2 hover:bg-gray-100 rounded-lg" title="Zoom Out">
+              <ZoomOut size={18} />
+            </button>
+            <button onClick={handleResetZoom} className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg">
+              Reset
+            </button>
+            <button onClick={handleZoomIn} className="p-2 hover:bg-gray-100 rounded-lg" title="Zoom In">
+              <ZoomIn size={18} />
+            </button>
+            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            <button onClick={toggleFullscreen} className="p-2 hover:bg-gray-100 rounded-lg">
+              {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+            </button>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg" title="Close">
+              <X size={18} />
+            </button>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          {/* Zoom Controls */}
-          <button
-            onClick={handleZoomOut}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Zoom Out"
-          >
-            <ZoomOut size={20} />
-          </button>
-          
-          <button
-            onClick={handleResetZoom}
-            className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            Reset
-          </button>
-          
-          <button
-            onClick={handleZoomIn}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Zoom In"
-          >
-            <ZoomIn size={20} />
-          </button>
-          
-          <div className="w-px h-6 bg-gray-300 mx-1"></div>
-          
-          {/* Fullscreen Toggle */}
-          <button
-            onClick={toggleFullscreen}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-          >
-            {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-          </button>
-          
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Close"
-          >
-            <X size={20} />
-          </button>
-        </div>
+
+        <LineSpacingControl 
+          lineSpacing={lineSpacing}
+          onChange={setLineSpacing}
+        />
       </div>
 
-      {/* Preview Content */}
       <div 
         className={`flex-1 overflow-auto bg-gray-100 ${isFullscreen ? 'p-0' : 'p-4'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div 
-          className="mx-auto bg-white shadow-lg transition-transform duration-200"
+          className={`mx-auto bg-white shadow-lg transition-transform duration-200 a4-page line-spacing-${lineSpacing}`}
           style={{ 
             transform: `scale(${zoom})`,
-            transformOrigin: 'top center',
-            width: '210mm',
-            minHeight: '297mm'
+            transformOrigin: 'top center'
           }}
         >
           {children}
         </div>
       </div>
 
-      {/* Bottom Instructions */}
       <div 
-        className="bg-white border-t border-gray-200 p-3 text-center text-xs text-gray-600"
+        className="bg-white border-t border-gray-200 p-2 text-center text-xs text-gray-600"
         onClick={(e) => e.stopPropagation()}
       >
-        <p>💡 Use zoom controls to adjust view • Tap outside or X to close</p>
+        <p>💡 Use controls to adjust view • Tap outside or X to close</p>
       </div>
     </div>
   );
